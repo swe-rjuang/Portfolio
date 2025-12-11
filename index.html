@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,37 +11,47 @@
     <!-- Use Inter font family -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0d1117; /* Dark background similar to GitHub */
-            color: #c9d1d9; /* Light text */
+            background-color: #0d1117;
+            /* Dark background similar to GitHub */
+            color: #c9d1d9;
+            /* Light text */
         }
+
         /* Custom styles for the horizontal scrolling panel */
         .scroll-container::-webkit-scrollbar {
             height: 8px;
         }
+
         .scroll-container::-webkit-scrollbar-thumb {
             background-color: #30363d;
             border-radius: 4px;
         }
+
         .scroll-container::-webkit-scrollbar-track {
             background-color: #161b22;
         }
+
         .scroll-container {
             /* Fallback for Firefox */
             scrollbar-color: #30363d #161b22;
             /* Default cursor for drag interaction */
             cursor: grab;
-            user-select: none; /* Prevents text selection while dragging */
+            user-select: none;
+            /* Prevents text selection while dragging */
         }
+
         .scroll-container.cursor-grabbing {
             cursor: grabbing;
         }
-        
+
         .project-thumbnail {
             transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
             cursor: pointer;
         }
+
         .project-thumbnail.active {
             border-color: #58a6ff;
             box-shadow: 0 0 15px rgba(88, 166, 255, 0.5);
@@ -59,26 +70,30 @@
         #scroll-wrapper {
             overflow-y: visible !important;
         }
-        
+
         /* Custom scrollbar for the image gallery row */
         #image-gallery::-webkit-scrollbar {
             height: 6px;
         }
+
         #image-gallery::-webkit-scrollbar-thumb {
             background-color: #30363d;
             border-radius: 3px;
         }
+
         #image-gallery::-webkit-scrollbar-track {
             background-color: transparent;
         }
     </style>
 </head>
+
 <body class="min-h-screen">
 
     <div class="container mx-auto p-4 sm:p-8">
         <!-- Header Section -->
         <header class="text-left mb-8 sm:mb-12">
-            <h1 class="text-4xl sm:text-5xl font-extrabold text-[#58a6ff] mb-2"><span class="text-white">Rick Juang</span> <span class="font-normal text-gray-600">|</span> Portfolio</h1>
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-[#58a6ff] mb-2"><span class="text-white">Rick
+                    Juang</span> <span class="font-normal text-gray-600">|</span> Portfolio</h1>
             <!--p class="text-xl text-gray-400">Turning complex systems into simple solutions</p-->
             <p class="text-xl text-gray-400">Gameplay Systems, AI Behaviors, UI and Tools Development</p>
         </header>
@@ -86,7 +101,7 @@
         <!-- Project Thumbnails (Side-Scrolling Panel with Controls) -->
         <div class="mb-10 p-4 bg-[#161b22] rounded-xl shadow-2xl border border-gray-700 relative group">
             <h2 class="text-2xl font-semibold mb-4 text-gray-200">Featured Projects</h2>
-            
+
             <!-- Scrollable content wrapper (DRAGGABLE AREA) -->
             <!-- py-4 ensures space for the enlarged active thumbnail highlight -->
             <div id="scroll-wrapper" class="overflow-x-auto scroll-container py-4">
@@ -97,26 +112,39 @@
             </div>
 
             <!-- Scroll Buttons (ABSOLUTELY POSITIONED) -->
-            <button id="scroll-left-btn" class="scroll-btn absolute left-0 top-[52px] h-36 sm:h-36 py-2 px-2 rounded-r-lg opacity-0 invisible group-hover:opacity-100 transition-opacity duration-300 z-10 bg-gradient-to-r from-[#161b22] via-[#161b22] to-transparent text-[#58a6ff] focus:outline-none" aria-label="Scroll left">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            <button id="scroll-left-btn"
+                class="scroll-btn absolute left-0 top-[52px] h-36 sm:h-36 py-2 px-2 rounded-r-lg opacity-0 invisible group-hover:opacity-100 transition-opacity duration-300 z-10 bg-gradient-to-r from-[#161b22] via-[#161b22] to-transparent text-[#58a6ff] focus:outline-none"
+                aria-label="Scroll left">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 18l-6-6 6-6" />
+                </svg>
             </button>
-            
-            <button id="scroll-right-btn" class="scroll-btn absolute right-0 top-[52px] h-36 sm:h-36 py-2 px-2 rounded-l-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 bg-gradient-to-l from-[#161b22] via-[#161b22] to-transparent text-[#58a6ff] focus:outline-none" aria-label="Scroll right">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+
+            <button id="scroll-right-btn"
+                class="scroll-btn absolute right-0 top-[52px] h-36 sm:h-36 py-2 px-2 rounded-l-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 bg-gradient-to-l from-[#161b22] via-[#161b22] to-transparent text-[#58a6ff] focus:outline-none"
+                aria-label="Scroll right">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 18l6-6-6-6" />
+                </svg>
             </button>
         </div>
 
         <!-- Project Detail Area (Updates on Click) -->
-        <main id="project-details" class="bg-[#161b22] p-6 sm:p-10 rounded-xl shadow-2xl border border-gray-700 min-h-[600px]">
+        <main id="project-details"
+            class="bg-[#161b22] p-6 sm:p-10 rounded-xl shadow-2xl border border-gray-700 min-h-[600px]">
             <h2 class="3xl sm:text-4xl font-bold text-gray-50 mb-4" id="detail-title">Select a Project Above</h2>
 
             <div class="grid md:grid-cols-2 gap-8">
                 <!-- Media Column (Image and Video) -->
-                <div class="min-w-0"> 
+                <div class="min-w-0">
                     <!-- Main Image Area -->
                     <div class="mb-4">
-                        <img id="detail-image" class="w-full h-auto rounded-lg shadow-xl border border-gray-600 object-cover aspect-video min-w-0"
-                                 src="https://placehold.co/800x450/1f242d/c9d1d9?text=Select+a+Project" alt="Project Main Visual">
+                        <img id="detail-image"
+                            class="w-full h-auto rounded-lg shadow-xl border border-gray-600 object-cover aspect-video min-w-0"
+                            src="https://placehold.co/800x450/1f242d/c9d1d9?text=Select+a+Project"
+                            alt="Project Main Visual">
                     </div>
 
                     <!-- NEW: Image Gallery/Carousel -->
@@ -138,7 +166,8 @@
                 <div class="pt-4">
                     <h3 class="text-2xl font-semibold mb-3 text-[#58a6ff]">Project Overview</h3>
                     <p id="detail-description" class="text-gray-400 leading-relaxed">
-                        Click on any thumbnail in the scrolling panel above to load the corresponding project details, images, and embedded videos into this section.
+                        Click on any thumbnail in the scrolling panel above to load the corresponding project details,
+                        images, and embedded videos into this section.
                         This single-file HTML structure gives you complete control over presentation and interactivity.
                     </p>
 
@@ -150,7 +179,7 @@
                         </ul>
                     </div>
                     <!-- END Key Contributions Section -->
-                    
+
                     <!-- NEW: Tech Stack Tags Container -->
                     <div class="mt-8">
                         <h3 class="text-2xl font-semibold mb-3 text-[#58a6ff]">Tech Stack</h3>
@@ -166,7 +195,7 @@
 
     <script>
         // --- 1. MOCK DATA DEFINITION ---
-        
+
         // Define styles for consistent tag colors
         const TAG_STYLES = {
             // Programming Languages
@@ -174,12 +203,12 @@
             'C#': 'bg-purple-600 text-white',
             'C++': 'bg-blue-600 text-white',
             'HTML5': 'bg-orange-600 text-white',
-			'Java': 'bg-white text-teal-700',
+            'Java': 'bg-white text-teal-700',
             'JavaScript': 'bg-yellow-400 text-black',
             'Python': 'bg-blue-400 text-yellow-200',
             'XAML': 'bg-blue-400 text-white',
             'XML': 'bg-white text-blue-500',
-			// Game Engines & Frameworks
+            // Game Engines & Frameworks
             'Blueprint': 'bg-blue-600 text-white',
             'CUDA': 'bg-green-500 text-black',
             'Godot': 'bg-blue-400 text-white',
@@ -193,7 +222,7 @@
             'Unreal Engine 4': 'bg-black text-white',
             'Unreal Engine 5': 'bg-black text-white',
             'WebGL': 'bg-white text-red-600',
-			// Tools & Plugins
+            // Tools & Plugins
             'Git': 'bg-orange-600 text-white',
             'Perforce': 'bg-indigo-600 text-white',
             // CI/CD & Monitoring
@@ -341,17 +370,24 @@
                 title: 'Academic & Experimental Works',
                 thumbnail_url: 'thumb/thumb_gatech_180.jpg',
                 detail_image_urls: [
-                    'https://placehold.co/800x450/4299E1/ffffff?text=Prison+Dodge+Ball+AI+Agents',
-                    'https://placehold.co/800x450/4299E1/ffffff?text=Fuzzy+Logic+Controller',
-                    'https://placehold.co/800x450/4299E1/ffffff?text=Dynamic+Path+Planning',
-                    'https://placehold.co/800x450/4299E1/ffffff?text=Ballistic+Projectile+Simulation',
-                    'https://placehold.co/800x450/4299E1/ffffff?text=Inverse+Kinematics+Solver',
-                    'https://placehold.co/800x450/4299E1/ffffff?text=Rigidbody+Collision',
-                    'https://placehold.co/800x450/4299E1/ffffff?text=Constraint+System',
-                    'https://placehold.co/800x450/4299E1/ffffff?text=Physics+Integrator',
-                    'https://placehold.co/800x450/4299E1/ffffff?text=Spline',
+                    'https://img.youtube.com/vi/OCGrrtmS75U/hqdefault.jpg',
+                    'https://img.youtube.com/vi/pGrAdf5FHKA/hqdefault.jpg',
+                    'https://img.youtube.com/vi/jFx-gsPCrp0/hqdefault.jpg',
+                    'https://img.youtube.com/vi/ImLKj1uLCCw/hqdefault.jpg',
+                    'https://img.youtube.com/vi/4MtzXSGv6I4/hqdefault.jpg',
+                    'https://img.youtube.com/vi/wmAGeEWpIhA/hqdefault.jpg',
+                    //'https://img.youtube.com/vi/3JknTMedsz8/hqdefault.jpg',
+                    //'https://placehold.co/800x450/4299E1/ffffff?text=Prison+Dodge+Ball+AI+Agents',
+                    //'https://placehold.co/800x450/4299E1/ffffff?text=Fuzzy+Logic+Controller',
+                    //'https://placehold.co/800x450/4299E1/ffffff?text=Dynamic+Path+Planning',
+                    //'https://placehold.co/800x450/4299E1/ffffff?text=Ballistic+Projectile+Simulation',
+                    //'https://placehold.co/800x450/4299E1/ffffff?text=Inverse+Kinematics+Solver',
+                    //'https://placehold.co/800x450/4299E1/ffffff?text=Rigidbody+Collision',
+                    //'https://placehold.co/800x450/4299E1/ffffff?text=Constraint+System',
+                    //'https://placehold.co/800x450/4299E1/ffffff?text=Physics+Integrator',
+                    //'https://placehold.co/800x450/4299E1/ffffff?text=Spline',
                 ],
-                description: "A collection of class projects. (WIP)",
+                description: "A collection of class projects. (Coming soon)",
                 contributions: [
                     "TBD",
                 ],
@@ -377,7 +413,8 @@
                 contributions: [
                     "TBD",
                 ],
-                tech_stack: Object.keys(TAG_STYLES), 
+                //tech_stack: Object.keys(TAG_STYLES), //  debug code to show all tags
+                tech_stack: ['C++', 'Unreal Engine 5', 'Blueprint'],
                 video_embed_url: 'https://www.youtube.com/embed/Me91tPpnyus?autoplay=0&controls=1&mute=0'
             },
         ];
@@ -388,17 +425,17 @@
         const detailImage = document.getElementById('detail-image');
         const detailDescription = document.getElementById('detail-description');
         const videoContainer = document.getElementById('video-container');
-        const contributionsList = document.getElementById('contributions-list'); 
-        
+        const contributionsList = document.getElementById('contributions-list');
+
         const scrollWrapper = document.getElementById('scroll-wrapper');
         const scrollLeftBtn = document.getElementById('scroll-left-btn');
         const scrollRightBtn = document.getElementById('scroll-right-btn');
-        
-        const imageGallery = document.getElementById('image-gallery'); 
+
+        const imageGallery = document.getElementById('image-gallery');
         const techStackContainer = document.getElementById('tech-stack-container'); // NEW REFERENCE
 
         let activeProject = null;
-        
+
         // --- 3. CORE RENDERING FUNCTION ---
 
         /**
@@ -406,10 +443,10 @@
          * @param {object} project - The project data object.
          */
         function renderProjectDetails(project) {
-            
+
             // --- Update Text and Main Image ---
             detailTitle.textContent = project.title;
-            
+
             // Set main image to the first URL in the array
             detailImage.src = project.detail_image_urls[0];
             detailImage.alt = `${project.title} Screenshot`;
@@ -422,7 +459,7 @@
                 li.innerHTML = item;
                 contributionsList.appendChild(li);
             });
-            
+
             // --- Update Image Gallery ---
             imageGallery.innerHTML = ''; // Clear previous gallery
             project.detail_image_urls.forEach((url, index) => {
@@ -433,14 +470,14 @@
                 const img = document.createElement('img');
                 img.src = url;
                 // Add onerror to handle bad placeholder URLs from the mock data
-                img.onerror = function() { this.src = 'https://placehold.co/120x90/1f242d/c9d1d9?text=Image'; };
+                img.onerror = function () { this.src = 'https://placehold.co/120x90/1f242d/c9d1d9?text=Image'; };
                 img.alt = `${project.title} Screenshot ${index + 1}`;
                 img.className = 'w-full h-full object-cover';
-                
+
                 imgWrapper.addEventListener('click', () => {
                     // Switch main image
                     detailImage.src = url;
-                    
+
                     // Update active border style in gallery
                     document.querySelectorAll('#image-gallery > div').forEach(thumb => {
                         thumb.classList.remove('border-[#58a6ff]', 'scale-[1.05]');
@@ -487,9 +524,9 @@
             document.getElementById(`thumb-${project.id}`).classList.add('active');
             activeProject = project.id;
         }
-        
+
         // --- 4. INTERACTIVE SCROLLING LOGIC ---
-        
+
         const SCROLL_DISTANCE = 300; // Pixels to scroll per click
 
         /** Checks if the scroll boundaries are hit and updates button visibility. */
@@ -513,7 +550,7 @@
                 }
             });
         }
-        
+
         /** Scrolls the wrapper smoothly based on direction (-1 for left, 1 for right). */
         function smoothScroll(direction) {
             scrollWrapper.scrollBy({
@@ -521,7 +558,7 @@
                 behavior: 'smooth'
             });
         }
-        
+
         // A. Drag Scrolling (Mouse Down/Move/Up)
         let isDown = false;
         let startX;
@@ -554,22 +591,22 @@
 
         scrollWrapper.addEventListener('mousemove', (e) => {
             if (!isDown) return;
-            e.preventDefault(); 
+            e.preventDefault();
             const x = e.pageX - scrollWrapper.offsetLeft;
             const walk = (x - startX) * 1.15;  // Adjust scroll speed as needed
             scrollWrapper.scrollLeft = scrollLeftPos - walk;
         });
-        
+
         // B. Mouse Wheel Scrolling
         scrollWrapper.addEventListener('wheel', (e) => {
             e.preventDefault();
             scrollWrapper.scrollLeft += (e.deltaY * 0.85);  // Adjust scroll speed as needed
         });
-        
+
         // C. Button & Scroll Listeners
         scrollLeftBtn.addEventListener('click', () => smoothScroll(-1));
         scrollRightBtn.addEventListener('click', () => smoothScroll(1));
-        
+
         scrollWrapper.addEventListener('scroll', checkScrollPosition);
 
         // --- 5. INITIALIZATION ---
@@ -582,16 +619,16 @@
                 const button = document.createElement('button');
                 button.id = `thumb-${project.id}`;
                 button.className = 'project-thumbnail w-[160px] h-[90px] flex-shrink-0 rounded-lg border-2 border-transparent hover:border-[#58a6ff]/50 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-[#58a6ff]';
-                
+
                 const img = document.createElement('img');
                 img.src = project.thumbnail_url;
                 // Add an error fallback for placeholder images
-                img.onerror = function() { this.src = 'https://placehold.co/150x90/1f242d/c9d1d9?text='+project.title; };
+                img.onerror = function () { this.src = 'https://placehold.co/150x90/1f242d/c9d1d9?text=' + project.title; };
                 img.alt = `${project.title} Thumbnail`;
-                img.className = 'w-full h-full object-cover rounded-lg'; 
-                
+                img.className = 'w-full h-full object-cover rounded-lg';
+
                 button.appendChild(img);
-                
+
                 button.addEventListener('click', () => {
                     renderProjectDetails(project);
                 });
@@ -604,7 +641,7 @@
                 renderProjectDetails(projects[0]);
             }
         }
-        
+
         /** Combines thumbnail initialization with scroll initialization */
         function initializeApp() {
             initializeThumbnails();
@@ -616,4 +653,5 @@
         window.onload = initializeApp;
     </script>
 </body>
+
 </html>
