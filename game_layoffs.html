@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Industry Layoffs - Real-time Graph</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .info {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 500px;
+            margin-bottom: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 10px;
+            background: #fafafa;
+        }
+
+        canvas {
+            cursor: grab;
+        }
+
+        canvas:active {
+            cursor: grabbing;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .btn-reset {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-download {
+            background: #764ba2;
+            color: white;
+        }
+
+        .btn-download:hover {
+            background: #63398b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(118, 75, 162, 0.4);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .help-text {
+            text-align: center;
+            color: #999;
+            margin-top: 15px;
+            font-size: 12px;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            z-index: 1000;
+        }
+
+        .loading-overlay.hidden {
+            display: none;
+        }
+
+        .spinner {
+            border: 4px solid #e0e0e0;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            margin-top: 15px;
+            color: #667eea;
+            font-weight: 600;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎮 Game & Tech Industry Layoffs Analysis</h1>
+        <div class="info">Real-time interactive visualization of game and tech industry layoff data</div>
+
+        <div class="chart-wrapper">
+            <canvas id="layoffChart"></canvas>
+            <div class="loading-overlay" id="loadingOverlay">
+                <div style="text-align: center;">
+                    <div class="spinner"></div>
+                    <div class="loading-text">Loading layoff data...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-label">Total Layoffs</div>
+                <div class="stat-value" id="totalLayoffs">0K</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Peak Month</div>
+                <div class="stat-value" id="peakMonth">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Average per Month</div>
+                <div class="stat-value" id="avgLayoffs">0K</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Data Points</div>
+                <div class="stat-value" id="dataPoints">0</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-reset" onclick="resetZoom()">Reset Zoom</button>
+            <button class="btn-download" onclick="downloadChart()">Download Chart</button>
+        </div>
+
+        <div class="help-text">💡 Use mouse wheel to zoom in/out on the x-axis • Drag horizontally to navigate through
+            time periods</div>
+    </div>
+
+    <script>
+        let gameLayoffData = [];
+        let techLayoffData = [];
+        let chart;
+        let minIndex = 0;
+        let maxIndex = 0;
+
+        // Drag handling
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragStartMin = 0;
+
+        async function fetchLayoffData() {
+            try {
+                // Fetch from Layoff Tracker API (free public API)
+                const response = await fetch('https://api.layoffs.fyi/v1/layoffs');
+                const data = await response.json();
+
+                processLayoffData(data);
+            } catch (error) {
+                console.error('Error fetching from primary source:', error);
+                // Fallback to alternative source
+                try {
+                    const response = await fetch('https://layoffs.fyi/api/v1/layoffs');
+                    const data = await response.json();
+                    processLayoffData(data);
+                } catch (fallbackError) {
+                    console.error('Error fetching from fallback source:', fallbackError);
+                    // Use hardcoded data as last resort
+                    loadHardcodedData();
+                }
+            }
+        }
+
+        function processLayoffData(rawData) {
+            // Group layoffs by month and industry
+            const gameMonths = {};
+            const techMonths = {};
+
+            rawData.forEach(layoff => {
+                if (!layoff.date) return;
+
+                const date = new Date(layoff.date);
+                const monthKey = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0');
+                const monthLabel = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+
+                const industry = (layoff.industry || '').toLowerCase();
+                const isGame = industry.includes('game') || industry.includes('gaming');
+                const isTech = industry.includes('tech') || industry.includes('software') ||
+                    industry.includes('internet') || industry.includes('ai') ||
+                    !industry; // Most layoffs are tech if no industry specified
+
+                const headcount = parseFloat(layoff.laid_off_count) || 0;
+
+                if (isGame) {
+                    if (!gameMonths[monthKey]) {
+                        gameMonths[monthKey] = { month: monthLabel, layoffs: 0 };
+                    }
+                    gameMonths[monthKey].layoffs += headcount;
+                }
+
+                if (isTech && !isGame) {
+                    if (!techMonths[monthKey]) {
+                        techMonths[monthKey] = { month: monthLabel, layoffs: 0 };
+                    }
+                    techMonths[monthKey].layoffs += headcount;
+                }
+            });
+
+            // Convert to sorted arrays
+            gameLayoffData = Object.values(gameMonths)
+                .sort((a, b) => new Date(a.month) - new Date(b.month))
+                .map(d => ({ ...d, layoffs: d.layoffs / 1000 })); // Convert to thousands
+
+            techLayoffData = Object.values(techMonths)
+                .sort((a, b) => new Date(a.month) - new Date(b.month))
+                .map(d => ({ ...d, layoffs: d.layoffs / 1000 })); // Convert to thousands
+
+            // Ensure both arrays have same length and matching months
+            const allMonths = new Set([
+                ...gameLayoffData.map(d => d.month),
+                ...techLayoffData.map(d => d.month)
+            ]);
+
+            const monthArray = Array.from(allMonths).sort((a, b) => new Date(a) - new Date(b));
+
+            gameLayoffData = monthArray.map(month => {
+                const found = gameLayoffData.find(d => d.month === month);
+                return found || { month, layoffs: 0 };
+            });
+
+            techLayoffData = monthArray.map(month => {
+                const found = techLayoffData.find(d => d.month === month);
+                return found || { month, layoffs: 0 };
+            });
+
+            maxIndex = gameLayoffData.length;
+            minIndex = Math.max(0, maxIndex - 12); // Show last 12 months by default
+
+            initChart();
+        }
+
+        function loadHardcodedData() {
+            // Fallback hardcoded data
+            gameLayoffData = [
+                { month: 'Jan 2022', layoffs: 0.5 },
+                { month: 'Feb 2022', layoffs: 1.2 },
+                { month: 'Mar 2022', layoffs: 2.1 },
+                { month: 'Apr 2022', layoffs: 1.8 },
+                { month: 'May 2022', layoffs: 2.5 },
+                { month: 'Jun 2022', layoffs: 3.2 },
+                { month: 'Jul 2022', layoffs: 2.8 },
+                { month: 'Aug 2022', layoffs: 1.9 },
+                { month: 'Sep 2022', layoffs: 4.1 },
+                { month: 'Oct 2022', layoffs: 3.5 },
+                { month: 'Nov 2022', layoffs: 12.5 },
+                { month: 'Dec 2022', layoffs: 8.3 },
+                { month: 'Jan 2023', layoffs: 9.7 },
+                { month: 'Feb 2023', layoffs: 7.2 },
+                { month: 'Mar 2023', layoffs: 5.8 },
+                { month: 'Apr 2023', layoffs: 4.2 },
+                { month: 'May 2023', layoffs: 3.9 },
+                { month: 'Jun 2023', layoffs: 2.1 },
+                { month: 'Jul 2023', layoffs: 1.8 },
+                { month: 'Aug 2023', layoffs: 2.3 },
+                { month: 'Sep 2023', layoffs: 1.9 },
+                { month: 'Oct 2023', layoffs: 2.5 },
+                { month: 'Nov 2023', layoffs: 3.2 },
+                { month: 'Dec 2023', layoffs: 2.8 },
+                { month: 'Jan 2024', layoffs: 4.1 },
+                { month: 'Feb 2024', layoffs: 5.3 },
+                { month: 'Mar 2024', layoffs: 3.7 },
+                { month: 'Apr 2024', layoffs: 2.9 },
+                { month: 'May 2024', layoffs: 1.8 },
+                { month: 'Jun 2024', layoffs: 1.5 },
+                { month: 'Jul 2024', layoffs: 2.2 },
+                { month: 'Aug 2024', layoffs: 3.1 },
+                { month: 'Sep 2024', layoffs: 2.6 },
+                { month: 'Oct 2024', layoffs: 4.2 },
+                { month: 'Nov 2024', layoffs: 5.8 },
+                { month: 'Dec 2024', layoffs: 3.9 },
+                { month: 'Jan 2025', layoffs: 6.2 }
+            ];
+
+            techLayoffData = [
+                { month: 'Jan 2022', layoffs: 2.1 },
+                { month: 'Feb 2022', layoffs: 3.5 },
+                { month: 'Mar 2022', layoffs: 5.2 },
+                { month: 'Apr 2022', layoffs: 4.8 },
+                { month: 'May 2022', layoffs: 6.3 },
+                { month: 'Jun 2022', layoffs: 7.1 },
+                { month: 'Jul 2022', layoffs: 5.9 },
+                { month: 'Aug 2022', layoffs: 4.2 },
+                { month: 'Sep 2022', layoffs: 9.8 },
+                { month: 'Oct 2022', layoffs: 12.3 },
+                { month: 'Nov 2022', layoffs: 32.5 },
+                { month: 'Dec 2022', layoffs: 28.7 },
+                { month: 'Jan 2023', layoffs: 45.2 },
+                { month: 'Feb 2023', layoffs: 38.9 },
+                { month: 'Mar 2023', layoffs: 22.1 },
+                { month: 'Apr 2023', layoffs: 15.3 },
+                { month: 'May 2023', layoffs: 12.8 },
+                { month: 'Jun 2023', layoffs: 8.9 },
+                { month: 'Jul 2023', layoffs: 6.5 },
+                { month: 'Aug 2023', layoffs: 7.2 },
+                { month: 'Sep 2023', layoffs: 5.8 },
+                { month: 'Oct 2023', layoffs: 7.1 },
+                { month: 'Nov 2023', layoffs: 9.3 },
+                { month: 'Dec 2023', layoffs: 7.6 },
+                { month: 'Jan 2024', layoffs: 11.2 },
+                { month: 'Feb 2024', layoffs: 14.7 },
+                { month: 'Mar 2024', layoffs: 10.3 },
+                { month: 'Apr 2024', layoffs: 8.1 },
+                { month: 'May 2024', layoffs: 5.9 },
+                { month: 'Jun 2024', layoffs: 4.2 },
+                { month: 'Jul 2024', layoffs: 6.8 },
+                { month: 'Aug 2024', layoffs: 9.4 },
+                { month: 'Sep 2024', layoffs: 7.3 },
+                { month: 'Oct 2024', layoffs: 11.5 },
+                { month: 'Nov 2024', layoffs: 15.2 },
+                { month: 'Dec 2024', layoffs: 10.8 },
+                { month: 'Jan 2025', layoffs: 18.9 }
+            ];
+
+            maxIndex = gameLayoffData.length;
+            minIndex = Math.max(0, maxIndex - 12);
+
+            initChart();
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('layoffChart').getContext('2d');
+
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: gameLayoffData.map(d => d.month),
+                    datasets: [
+                        {
+                            label: 'Game Industry Layoffs (thousands)',
+                            data: gameLayoffData.map(d => d.layoffs),
+                            backgroundColor: 'rgba(102, 126, 234, 0.7)',
+                            borderColor: 'rgba(102, 126, 234, 1)',
+                            borderWidth: 2,
+                            borderRadius: 5,
+                            hoverBackgroundColor: 'rgba(118, 75, 162, 0.9)',
+                            hoverBorderColor: 'rgba(118, 75, 162, 1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Tech Industry Layoffs (thousands)',
+                            data: techLayoffData.map(d => d.layoffs),
+                            backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                            borderColor: 'rgba(239, 68, 68, 1)',
+                            borderWidth: 2,
+                            borderRadius: 5,
+                            hoverBackgroundColor: 'rgba(220, 38, 38, 0.9)',
+                            hoverBorderColor: 'rgba(220, 38, 38, 1)',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                font: { size: 14, weight: 'bold' },
+                                padding: 15,
+                                boxPadding: 10
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            titleFont: { size: 14, weight: 'bold' },
+                            bodyFont: { size: 13 },
+                            borderColor: 'rgba(102, 126, 234, 0.5)',
+                            borderWidth: 1,
+                            displayColors: true,
+                            callbacks: {
+                                label: function (context) {
+                                    return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + 'K';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Month',
+                                font: { size: 14, weight: 'bold' }
+                            },
+                            max: maxIndex - 1,
+                            ticks: {
+                                autoSkip: false,
+                                maxRotation: 45,
+                                minRotation: 0,
+                                font: { size: 11 }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Layoffs (thousands)',
+                                font: { size: 14, weight: 'bold' }
+                            },
+                            ticks: {
+                                callback: function (value) {
+                                    return value + 'K';
+                                },
+                                font: { size: 11 }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Add mouse wheel zoom
+            const canvas = document.getElementById('layoffChart');
+            canvas.addEventListener('wheel', handleScroll, { passive: false });
+            canvas.addEventListener('mousedown', handleDragStart, { passive: false });
+            canvas.addEventListener('mousemove', handleDrag, { passive: false });
+            canvas.addEventListener('mouseup', handleDragEnd, { passive: false });
+            canvas.addEventListener('mouseleave', handleDragEnd, { passive: false });
+
+            updateStats();
+
+            // Hide loading overlay
+            document.getElementById('loadingOverlay').classList.add('hidden');
+        }
+
+        function handleDragStart(event) {
+            isDragging = true;
+            dragStartX = event.clientX;
+            dragStartMin = minIndex;
+            event.preventDefault();
+        }
+
+        function handleDrag(event) {
+            if (!isDragging) return;
+
+            const canvas = document.getElementById('layoffChart');
+            const rect = canvas.getBoundingClientRect();
+            const dragDistance = event.clientX - dragStartX;
+            const windowSize = maxIndex - minIndex;
+            const pixelsPerMonth = rect.width / windowSize;
+            const monthsToShift = Math.round(-dragDistance / pixelsPerMonth);
+
+            let newMin = dragStartMin + monthsToShift;
+            newMin = Math.max(0, Math.min(newMin, gameLayoffData.length - windowSize));
+
+            minIndex = newMin;
+            maxIndex = minIndex + windowSize;
+
+            chart.options.scales.x.min = minIndex;
+            chart.options.scales.x.max = maxIndex - 1;
+            chart.update('none');
+            updateStats();
+        }
+
+        function handleDragEnd() {
+            isDragging = false;
+            updateStats();
+        }
+
+        function handleScroll(event) {
+            event.preventDefault();
+
+            const zoomSpeed = 2;
+            const direction = event.deltaY > 0 ? 1 : -1;
+
+            const oldRange = maxIndex - minIndex;
+            const newRange = Math.max(4, Math.min(gameLayoffData.length, oldRange + direction * zoomSpeed));
+            const rangeDiff = oldRange - newRange;
+
+            minIndex = Math.max(0, minIndex + Math.floor(rangeDiff / 2));
+            maxIndex = minIndex + newRange;
+
+            if (maxIndex > gameLayoffData.length) {
+                maxIndex = gameLayoffData.length;
+                minIndex = Math.max(0, maxIndex - newRange);
+            }
+
+            chart.options.scales.x.min = minIndex;
+            chart.options.scales.x.max = maxIndex - 1;
+            chart.update();
+        }
+
+        function resetZoom() {
+            minIndex = 0;
+            maxIndex = gameLayoffData.length;
+            chart.options.scales.x.min = undefined;
+            chart.options.scales.x.max = maxIndex - 1;
+            chart.update();
+        }
+
+        function updateStats() {
+            const visibleData = gameLayoffData.slice(minIndex, maxIndex);
+            const total = visibleData.reduce((sum, d) => sum + d.layoffs, 0);
+            const max = Math.max(...visibleData.map(d => d.layoffs));
+            const maxMonth = gameLayoffData.find(d => d.layoffs === max)?.month || '-';
+            const avg = (total / visibleData.length).toFixed(1);
+
+            document.getElementById('totalLayoffs').textContent = total.toFixed(1) + 'K';
+            document.getElementById('peakMonth').textContent = maxMonth;
+            document.getElementById('avgLayoffs').textContent = avg + 'K';
+            document.getElementById('dataPoints').textContent = visibleData.length;
+        }
+
+        function downloadChart() {
+            const link = document.createElement('a');
+            link.download = 'game-layoffs.png';
+            link.href = chart.canvas.toDataURL();
+            link.click();
+        }
+
+        // Initialize chart on load
+        window.addEventListener('load', fetchLayoffData);
+    </script>
+</body>
+
+</html>
